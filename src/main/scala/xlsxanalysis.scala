@@ -20,7 +20,7 @@ object xlsxanalysis {
     val df = sqlContext.read
       .format("com.crealytics.spark.excel")
       .option("sheetName", "Daily") // Required
-      .option("useHeader", "false") // Required
+      .option("useHeader", "true") // Required
       .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
       .option("inferSchema", "false") // Optional, default: false
       .option("addColorColumns", "true") // Optional, default: false
@@ -30,7 +30,7 @@ object xlsxanalysis {
       .option("maxRowsInMemory", 20) // Optional, default None. If set, uses a streaming reader which can help with big files
       .option("excerptSize", 10) // Optional, default: 10. If set and if schema inferred, number of rows to infer schema from
       .schema(peopleSchema) // Optional, default: Either inferred schema, or all columns are Strings
-      .load("C:\\\\Users\\\\hadoop\\\\Documents\\\\test.xls")
+      .load("C:\\Users\\hadoop\\Documents\\test\\test4.xlsx")
 //    def readExcel(file: String): DataFrame = sqlContext.read
 //      .format("com.crealytics.spark.excel")
 //      .option("location", file)
