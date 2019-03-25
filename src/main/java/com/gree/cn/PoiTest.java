@@ -1,27 +1,21 @@
 package com.gree.cn;
-
 import jdbc.JDBCHelper;
-import org.apache.poi.hssf.record.Record;
-import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.formula.functions.Function;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import util.ReadFile;
-
-import javax.annotation.processing.FilerException;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 public class PoiTest {
 
     public static void main(String[] args) {
+
+        /**
+         * 首先获取到某个路径，然后通过文件夹API读取文件夹的文件数已经获取文件的绝对路径
+         * 接着讲获取的文件名存放到一个一个List<String>中，这样就完美的获取到了路径下的所有文件了
+         */
         String path = "C:\\Users\\hadoop\\Documents\\test";
         List<String> list = new ArrayList<>();
         File file1 = new File(path);
@@ -31,8 +25,14 @@ public class PoiTest {
                 list.add(path + "\\" + filelist[i]);
             }
         }
+        /**
+         * 通过之前一步获取的文件集合，以及POI工具类来解析excel
+         * 获得我们想要的数据单元,然后将其存放到List<Object></>类中
+         * name -> workbook -> sheet -> cell
+         */
+        List<Object[]> paramlist = new ArrayList<Object[]>();
         for ( int i= 0; i<list.size();i++) {
-            File file = new File(list.get(i).toString());
+            File file = new File(list.get(i));
             InputStream in = null;
             Workbook workbook = null;
             try{
@@ -46,14 +46,16 @@ public class PoiTest {
             String xmbj = getCellValue(sheet.getRow(8).getCell(4));
             String devdt = getCellValue(sheet.getRow(11).getCell(8));
 
-            List<Object[]> paramlist = new ArrayList<Object[]>();
+
             paramlist.add(new Object[]{dmdq, xmbj, devdt});
-            String sql = "insert ignore into product(dmdq,xmbj,devdt) value(?,?,?) ";
-            JDBCHelper jdbcHelper = JDBCHelper.getInstance();
-            jdbcHelper.executeBatch(sql, paramlist);
-            System.out.println(dmdq + " " + xmbj + " " + devdt);
 
         }
+        /**
+         * 然后通过jdbc组件 连接本地数据库，插入数据到MySQL表中
+         */
+        String sql = "insert ignore into product(dmdq,xmbj,devdt) value(?,?,?) ";
+        JDBCHelper jdbcHelper = JDBCHelper.getInstance();
+        jdbcHelper.executeBatch(sql, paramlist);
     }
 
     //未处理公式
